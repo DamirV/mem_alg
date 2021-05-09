@@ -4,11 +4,10 @@ from scipy.ndimage.filters import generic_filter
 from matplotlib import pyplot as plt
 from scipy import stats
 
+# train n images => n * window_size ** 2 pieces
+# test 10 * n * window_size ** 2 checks
 
-# train 1 image => window_size ** 2 pieces
-# test 10 * window_size ** 2 checks
-
-class Calculator:
+class Calculator4:
 
     def __init__(self, depth, start_pos, window_size):
         self.memory = list()
@@ -58,41 +57,40 @@ class Calculator:
 
         return coordinates
 
-    def train(self, image, label):
+    def train(self, images, label):
 
         #helper.print_image(image)
 
-        self.image = image
-        coordinates = self.find_coordinates()
+        for i in range(len(images)):
+            self.image = images[i]
+            coordinates = self.find_coordinates()
 
-        """
-        plt.imshow(self.image, cmap=plt.get_cmap('gray'))###
-        plt.scatter(coordinates[0], coordinates[1], c='red', marker='o')###
-        plt.show()###
-        """
+            """
+            plt.imshow(self.image, cmap=plt.get_cmap('gray'))###
+            plt.scatter(coordinates[0], coordinates[1], c='red', marker='o')###
+            plt.show()###
+            """
 
-        self.x = coordinates[1]
-        self.y = coordinates[0]
+            self.x = coordinates[1]
+            self.y = coordinates[0]
 
-        """
-        print(coordinates)
-        helper.print_image(image[self.x - self.radius: self.x + self.radius + 1,
-                            self.y - self.radius: self.y + self.radius + 1])###
-        """
+            """
+            print(coordinates)
+            helper.print_image(image[self.x - self.radius: self.x + self.radius + 1,
+                                self.y - self.radius: self.y + self.radius + 1])###
+            """
 
-        for i in range(-self.radius, self.radius + 1):
-            for j in range(-self.radius, self.radius + 1):
-                if self.x + i - self.radius < 0 or self.x + i + self.radius + 1 > 28 \
-                        or self.y + j - self.radius < 0 or self.y + j + self.radius + 1 > 28:
-                    break
+            for i in range(-self.radius, self.radius + 1):
+                for j in range(-self.radius, self.radius + 1):
+                    if self.x + i - self.radius < 0 or self.x + i + self.radius + 1 > 28 \
+                            or self.y + j - self.radius < 0 or self.y + j + self.radius + 1 > 28:
+                        break
 
-                res = image[self.x + i - self.radius: self.x + i + self.radius + 1,
-                            self.y + j - self.radius: self.y + j + self.radius + 1]
+                    res = self.image[self.x + i - self.radius: self.x + i + self.radius + 1,
+                          self.y + j - self.radius: self.y + j + self.radius + 1]
 
-                #helper.print_image(res) ###
-                self.memory[label].append(res)
-
-        return coordinates
+                    # helper.print_image(res) ###
+                    self.memory[label].append(res)
 
 
     def check(self, image):
@@ -100,7 +98,6 @@ class Calculator:
         coordinates = self.find_coordinates()
         self.x = coordinates[1]
         self.y = coordinates[0]
-
 
         #plt.imshow(self.image, cmap=plt.get_cmap('gray'))  ###
         #plt.scatter(coordinates[0], coordinates[1], c='red', marker='o')  ###
@@ -133,7 +130,7 @@ class Calculator:
             if len(self.memory[i]) is not 0:
                 res[i] = int(min(tmp[i]))
 
-        args = res.argsort()[:5]
+        args = res.argsort()[:3]
         res = np.zeros(10)
         for i in args:
             res[i] = 1

@@ -1,7 +1,7 @@
 from keras.datasets import mnist
 from matplotlib import pyplot as plt
 import numpy as np
-import algorithm as al
+import algorithm3 as al
 import helper as hp
 import loader
 from scipy import stats
@@ -24,13 +24,16 @@ size = 60000
 start_pos = (10, 10)
 window_size = 5
 
-net = al.Calculator(1, start_pos, window_size)
+net = al.Calculator3(1, start_pos, window_size)
+
+count = 1000
+for i in range(10):
+    print(f"train {i}...")
+    images = train[i][0:count]
+    net.train(images, i)
 
 for i in range(10):
-    coordinates = net.train(train[i][7], i)
-
-for i in range(10):
-    print(i)
+    print(f"test {i}...")
     res = net.check(test[i][7])
     print(res)
     print("-----")

@@ -2,28 +2,17 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 
-def make_cloud():
-
-    return
-
-
 def distance(a, b):
-    res = 0
-
-    for i in range(len(a)):
-        for j in range(len(a[0])):
-            res += (int(a[i][j]) - int(b[i][j])) ** 2
-
-    res = res ** 0.5
+    res = np.linalg.norm(np.array(a) - np.array(b))
     return res
 
 
 def cut(image, start_pos, window_size):
     res = []
 
-    for i in range(window_size[0]):
+    for i in range(window_size):
         res.append([])
-        for j in range(window_size[1]):
+        for j in range(window_size):
             res[i].append(image[start_pos[0] + i][start_pos[1] + j])
 
     return res
@@ -31,4 +20,16 @@ def cut(image, start_pos, window_size):
 
 def print_image(image):
     plt.imshow(image, cmap=plt.get_cmap('gray'))
+    plt.show()
+
+
+def print_images(image1, image2):
+
+    fig = plt.figure(figsize=(10, 6))
+    fig.add_subplot(1, 2, 1)
+    plt.imshow(image1)
+
+    fig.add_subplot(1, 2, 2)
+    plt.imshow(image2)
+
     plt.show()

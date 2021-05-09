@@ -4,11 +4,10 @@ from scipy.ndimage.filters import generic_filter
 from matplotlib import pyplot as plt
 from scipy import stats
 
+# train n images => n pieces
+# test 10 * n checks
 
-# train 1 image => window_size ** 2 pieces
-# test 10 * window_size ** 2 checks
-
-class Calculator:
+class Calculator2:
 
     def __init__(self, depth, start_pos, window_size):
         self.memory = list()
@@ -21,6 +20,8 @@ class Calculator:
         self.y = start_pos[1]
         self.label = ""
         self.image = 0
+
+        self.accuracy = 200
 
         for i in range(10):
             self.memory.append([])
@@ -44,11 +45,11 @@ class Calculator:
 
         bright = 0
         coordinates = [0, 0]
-        for i in range(self.radius, size - self.radius):
-            for j in range(self.radius, size - self.radius):
+        for i in range(2, size - 2):
+            for j in range(2, size - 2):
                 sum = 0
-                for y in range(-self.radius, self.radius + 1):
-                    for x in range(-self.radius, self.radius + 1):
+                for y in range(-2, 3):
+                    for x in range(-2, 3):
                         sum += image[j + x, i + y]
 
                 if bright < sum:
@@ -58,42 +59,28 @@ class Calculator:
 
         return coordinates
 
-    def train(self, image, label):
+    def train(self, images, label):
 
         #helper.print_image(image)
 
-        self.image = image
-        coordinates = self.find_coordinates()
+        for i in range(len(images)):
+            self.image = images[i]
+            coordinates = self.find_coordinates()
+
+            self.x = coordinates[1]
+            self.y = coordinates[0]
+            res = self.image[self.x - self.radius: self.x + self.radius + 1,
+                  self.y - self.radius: self.y + self.radius + 1]
+            self.memory[label].append(res)
+
 
         """
-        plt.imshow(self.image, cmap=plt.get_cmap('gray'))###
-        plt.scatter(coordinates[0], coordinates[1], c='red', marker='o')###
-        plt.show()###
+        print(label)
+        print(self.length[label])
+        print(np.array(self.length[label]).mean())
+        print(np.array(self.length[label]).min())
+        print("----------")
         """
-
-        self.x = coordinates[1]
-        self.y = coordinates[0]
-
-        """
-        print(coordinates)
-        helper.print_image(image[self.x - self.radius: self.x + self.radius + 1,
-                            self.y - self.radius: self.y + self.radius + 1])###
-        """
-
-        for i in range(-self.radius, self.radius + 1):
-            for j in range(-self.radius, self.radius + 1):
-                if self.x + i - self.radius < 0 or self.x + i + self.radius + 1 > 28 \
-                        or self.y + j - self.radius < 0 or self.y + j + self.radius + 1 > 28:
-                    break
-
-                res = image[self.x + i - self.radius: self.x + i + self.radius + 1,
-                            self.y + j - self.radius: self.y + j + self.radius + 1]
-
-                #helper.print_image(res) ###
-                self.memory[label].append(res)
-
-        return coordinates
-
 
     def check(self, image):
         self.image = image
@@ -115,6 +102,7 @@ class Calculator:
         for i in range(10):
             tmp.append([])
 
+
         for i in range(10):
             if len(self.memory[i]) is not 0:
                 for j in range(len(self.memory[i])):
@@ -131,9 +119,10 @@ class Calculator:
         res = np.zeros(10)
         for i in range(10):
             if len(self.memory[i]) is not 0:
-                res[i] = int(min(tmp[i]))
+                #if np.array(tmp[i]).mean() <= np.array(self.length[i]).mean(): res[i] += 1
+                    res[i] = int(min(tmp[i]))
 
-        args = res.argsort()[:5]
+        args = res.argsort()[:3]
         res = np.zeros(10)
         for i in args:
             res[i] = 1

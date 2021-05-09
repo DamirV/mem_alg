@@ -1,4 +1,5 @@
 from keras.datasets import mnist
+import numpy as np
 
 def load():
     (train_x, train_y), (test_x, test_y) = mnist.load_data()
@@ -31,4 +32,5 @@ def load():
     for i in range(10):
         print(f"{i}: ({len(test[i])})")
     """
-    return train, test
+
+    return np.array(train, dtype=object), np.array(test, dtype=object)
