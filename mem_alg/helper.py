@@ -23,6 +23,12 @@ def print_image(image):
     plt.show()
 
 
+def print_image_with_dot(image, crd):
+    plt.imshow(image, cmap=plt.get_cmap('gray'))
+    plt.scatter(crd[0], crd[1], c='red', marker='o')
+    plt.show()
+
+
 def print_images(image1, image2):
 
     fig = plt.figure(figsize=(10, 6))

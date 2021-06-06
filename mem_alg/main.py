@@ -21,32 +21,22 @@ def testF(net, image, label):
 
 train, test = loader.load()
 size = 60000
-start_pos = (10, 10)
 window_size = 5
 
-net = al.Calculator(1, start_pos, window_size)
+net = al.Calculator(1, window_size)
+
+count = 100
+for i in range(10):
+    print(f"train {i}...")
+    images = train[i][0:count]
+    net.train(images, i)
 
 for i in range(10):
-    coordinates = net.train(train[i][7], i)
-
-for i in range(10):
-    print(i)
+    print(f"test {i}...")
     res = net.check(test[i][7])
     print(res)
     print("-----")
 
-
-"""
-image = train[0][7]
-
-plt.imshow(image, cmap=plt.get_cmap('gray'))
-plt.scatter(coordinates[0], coordinates[1], c='red', marker='o')
-plt.show()
-
-plt.imshow(net.get_sobel(image), cmap=plt.get_cmap("gray"))
-plt.scatter(coordinates[0], coordinates[1], c='red', marker='o')
-plt.show()
-"""
 
 
 
